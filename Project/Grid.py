@@ -22,7 +22,20 @@ class gridCell:
                 else:
                     self.cells[row].append(0)
 
+    # def ruleSet(self):
+    #     temp = []
+    #     for for in range(0)
+
     def draw(self):
-        pyglet.graphics.draw_indexed(4, pyglet.gl.GL_TRIANGLES,
-        [0, 1, 2, 1, 2, 3], 
-        ('v2i', (300, 300, 300, 350, 350, 300, 350, 350)))
+        for row in range(0, self.grid_height):
+            for col in range(0, self.grid_width):
+                if self.cells[row][col] == 1:
+                    square_coords = (row * self.cell_size, col * self.cell_size,
+                                     row * self.cell_size, col * self.cell_size + 
+                                     self.cell_size, row * self.cell_size + 
+                                     self.cell_size, col * self.cell_size, 
+                                     row * self.cell_size + self.cell_size, 
+                                     col * self.cell_size + self.cell_size)
+                    pyglet.graphics.draw_indexed(4, pyglet.gl.GL_TRIANGLES,
+                    [0, 1, 2, 1, 2, 3], 
+                    ('v2i', square_coords))
