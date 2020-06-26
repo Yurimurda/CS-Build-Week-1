@@ -5,6 +5,7 @@ from Grid import gridCell
 class Window(pyglet.window.Window):
 
     def __init__(self):
+        # Screen Dimensions
         super().__init__(600, 600)
         # The last int (in this case, it's 25) is important because
         # it is the cumulative setting for both the grid's cell width

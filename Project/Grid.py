@@ -22,9 +22,24 @@ class gridCell:
                 else:
                     self.cells[row].append(0)
 
-    # def ruleSet(self):
-    #     temp = []
-    #     for for in range(0)
+    def ruleSet(self):
+        temp = []
+        for row in range(0, self.grid_height):
+            temp.append([])
+            for col in range(0, self.grid_width):
+                cell_sum = sum([self.cell_val(row - 1, col),
+                                self.cell_val(row - 1, col - 1),
+                                self.cell_val(row, col - 1),
+                                self.cell_val(row + 1, col - 1),
+                                self.cell_val(row + 1, col),
+                                self.cell_val(row + 1, col + 1),
+                                self.cell_val(row, col + 1),
+                                self.cell_val(row - 1, col + 1)])
+
+    def cell_val(self, row, col):
+        if row >= 0 and row < self.grid_height and col >= 0 and col < self.grid_width:
+            return self.cells[row][col]
+        return 0
 
     def draw(self):
         for row in range(0, self.grid_height):
