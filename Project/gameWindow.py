@@ -15,6 +15,7 @@ class Window(pyglet.window.Window):
     def on_draw(self):
         self.clear()
         self.gridCell.draw()
+        self.gridCell.ruleSet()
 
 
 

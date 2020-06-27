@@ -36,6 +36,17 @@ class gridCell:
                                 self.cell_val(row, col + 1),
                                 self.cell_val(row - 1, col + 1)])
 
+            if self.cells[row][col] == 0 and cell_sum == 3:
+                temp[row].append(1)
+            elif self.cells[row][col] == 1 and (cell_sum == 3 or cell_sum == 2):
+                temp[row].append(1)
+            else: 
+                temp[row].append(0)
+
+        self.cells = temp
+
+
+
     def cell_val(self, row, col):
         if row >= 0 and row < self.grid_height and col >= 0 and col < self.grid_width:
             return self.cells[row][col]
