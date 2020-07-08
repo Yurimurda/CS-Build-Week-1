@@ -36,12 +36,17 @@ class gridCell:
                                 self.cell_val(row, col + 1),
                                 self.cell_val(row - 1, col + 1)])
 
-            if self.cells[row][col] == 0 and cell_sum == 3:
-                temp[row].append(1)
-            elif self.cells[row][col] == 1 and (cell_sum == 3 or cell_sum == 2):
-                temp[row].append(1)
-            else: 
-                temp[row].append(0)
+                # The following three statements determine the rules for each cell
+
+                # If the cell is off and is surrounded by 2 other neighbors, it turns on
+                if self.cells[row][col] == 0 and cell_sum == 3:
+                    temp[row].append(1)
+                # If the cell is on and is surrounded by 2 neighbors, it remains on
+                elif self.cells[row][col] == 1 and (cell_sum == 3 or cell_sum == 2):
+                    temp[row].append(1)
+                # Otherwise, the natural state of a cell is off
+                else: 
+                    temp[row].append(0)
 
         self.cells = temp
 

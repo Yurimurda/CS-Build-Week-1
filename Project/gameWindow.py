@@ -11,11 +11,18 @@ class Window(pyglet.window.Window):
         # it is the cumulative setting for both the grid's cell width
         # and height. It is relative to 'self.cells' in gridCell. 
         self.gridCell = gridCell(self.get_size()[0],  self.get_size()[1], 25)
+        pyglet.clock.schedule_interval(self.update, 1.0/24.0)
+        #                             24 frames every 1 second
+
 
     def on_draw(self):
         self.clear()
         self.gridCell.draw()
+        
+
+    def update(self, dt):
         self.gridCell.ruleSet()
+        
 
 
 
