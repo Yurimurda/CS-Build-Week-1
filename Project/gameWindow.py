@@ -45,3 +45,7 @@ if __name__ == '__main__':
 # If a cell however is not surrounded by 3 other cells, it turns off
 
 
+# As the cells on the grid are randomly generated, results of the switching
+# cells will differ with each instance and will result in a wide
+# yet predictable series of formations.
+
