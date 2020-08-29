@@ -20,23 +20,61 @@ const HEIGHT = 800;
 
 class Game extends React.Component {
 
-    state = {cells: [], interval: 100, isRunning: false}
-
-    startGame = () => {    this.setState({ isRunning: true});  }
-
-    stopGame = () => {    this.setState({ isRunning: false });  }
-
-    intervalChange = (event) => {    this.setState({ interval: event.target.value });  }
+    state = {
+        cells: [],
+        interval: 0, 
+        isRunning: false
+    }
 
 
-        constructor() { 
-            super();
-            this.rows = HEIGHT / CELL_SIZE;
-            this.cols = WIDTH / CELL_SIZE;
-            this.board = this.makeBoard();
+    constructor() { 
+        super();
+        this.rows = HEIGHT / CELL_SIZE;
+        this.cols = WIDTH / CELL_SIZE;
+        this.board = this.makeCleanBoard();
+        
+    }
+
+    startGame = () => { 
+        this.setState({ isRunning: true});
+        this.runIteration(); 
+    }
+
+    stopGame = () => { 
+        this.setState({ isRunning: false });
+    if (this.timeoutHandler) { window.clearTimeout(this.timeoutHandler); 
+        this.timeoutHandler = null }  
+    }
+
+    intervalChange = (event) => { 
+        this.setState({ interval: event.target.value }); 
+    }
+    
+    runIteration = () => { 
+        let newBoard = this.makeCleanBoard(); 
+        this.board = newBoard; 
+        this.setState({ cells:this.makeCells() });
+        this.timeoutHandler = window.setTimeout(() => { this.runIteration(); }, 
+        this.state.interval)
+
+        for (let y=0; y< this.rows; y++) {
+            for (let x = 0; x < this.cols; x++) {
+                let cellMates = this.cellRules(this.board, x, y);
+                if (this.board[y][x]) { 
+                    if (cellMates === 2 || cellMates === 3) {
+                        newBoard[x][y] = true; } else {
+                            newBoard[x][y] = false
+                        }
+                    } else {
+                        if (!this.board[y][x] && cellMates === 3) {
+                            newBoard[x][y] = true;
+                        }
+                    }
+            }
         }
+    }
 
-        makeBoard(){
+        makeCleanBoard(){
             let board = [];
             for (let y = 0; y < this.rows; y++){
                 board[y] = [];
@@ -61,16 +99,21 @@ class Game extends React.Component {
             }
         }
 
+        cellRules() {
+            
+
+        }
+
         render() {
             return(
                 <div>
-                    <div className="Board" style={{ width: WIDTH, height: HEIGHT, backgroundSize: `${CELL_SIZE}px ${CELL_SIZE}px`}}></div>
                     <div className="ButtonRow">
                         <input value={this.state.interval} onChange={this.intervalChange}/>
                         <button className="Button" onClick={this.startGame}>Start</button>
                         <button className="Button" onClick={this.stopGame}>Pause</button>
                         <button>Clear</button>
                     </div>
+                    <div className="Board" style={{ width: WIDTH, height: HEIGHT, backgroundSize: `${CELL_SIZE}px ${CELL_SIZE}px`}}></div>
                 </div>
                 
         
