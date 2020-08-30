@@ -17,12 +17,30 @@ const HEIGHT = 800;
 
 
 
+class Cell extends React.Component {
+    render() {
+        const { x, y} = this.props;
+        return(
+            <div className="Cell" style={{
+                top: `${CELL_SIZE * y + 1}px`,
+                left: `${CELL_SIZE * y + 1}px`,
+                width: `${CELL_SIZE * x - 1}px`,
+                height: `${CELL_SIZE * x - 1}px`
+            }} />
+
+        )
+    }
+}
+
+
+
+
 
 class Game extends React.Component {
 
     state = {
         cells: [],
-        interval: 0, 
+        interval: 10, 
         isRunning: false
     }
 
@@ -35,9 +53,13 @@ class Game extends React.Component {
         
     }
 
-    startGame = () => { 
-        this.setState({ isRunning: true});
-        this.runIteration(); 
+    startGame = () => {
+        for (let y = 0; y < this.rows; y++) {
+            for (let x = 0; x < this.cols; x++) {
+                this.board[y][x] = (Math.random() >= 3.5);
+            }
+        }
+        this.setState({ cells: this.makeCells() });
     }
 
     stopGame = () => { 
@@ -74,6 +96,18 @@ class Game extends React.Component {
         }
     }
 
+    getElementOffSet() {
+        const rect = this.boardRef.getBoundingClientRect();
+        const doc = document.documentElement
+        return {
+            x: (rect.left + window.pageXOffset) - doc.clientLeft,
+            y: (rect.top + window.pageYOffset) - doc.clientTop
+        }
+    }
+
+
+    
+
         makeCleanBoard(){
             let board = [];
             for (let y = 0; y < this.rows; y++){
@@ -99,12 +133,26 @@ class Game extends React.Component {
             }
         }
 
-        cellRules() {
-            
+        
 
+        cellRules(board, x, y) {
+            let cellMates = 0;
+            const dirs = [[-1, -1], [-1, 0], [-1, 1], [0, 1], [1, 1], [1, 0], [1, -1], [0, -1]];
+
+            for (let i = 0; i < dirs.length; i++) {
+                const dir = dirs[i];
+                let y1 = y + dir[0];
+                let x1 = x + dir[1];
+
+            if (x1 >= 0 && x1 < this.cols && y1 >= 0 && y1 < this.rows && board[y1][x1]) {
+                cellMates++;
+                }
+            }
+            return cellMates
         }
 
         render() {
+            const { cells } = this.state; 
             return(
                 <div>
                     <div className="ButtonRow">
@@ -113,7 +161,12 @@ class Game extends React.Component {
                         <button className="Button" onClick={this.stopGame}>Pause</button>
                         <button>Clear</button>
                     </div>
-                    <div className="Board" style={{ width: WIDTH, height: HEIGHT, backgroundSize: `${CELL_SIZE}px ${CELL_SIZE}px`}}></div>
+                    <div className="Board" style={{ width: WIDTH, height: HEIGHT, backgroundSize: `${CELL_SIZE}px ${CELL_SIZE}px`}}
+                    ref={(n) => { this.boardRef = n}}>
+                        {cells.map(cell => (
+                        <Cell x={cell.x} y={cell.y} key={`${cell.x},${cell.y}`}/>
+                        ))}
+                    </div>
                 </div>
                 
         
