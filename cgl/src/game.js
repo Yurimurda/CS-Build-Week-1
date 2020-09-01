@@ -54,24 +54,28 @@ class Game extends React.Component {
     }
 
     startGame = () => {
+        this.setState({ cells: this.makeCells(), isRunning: true });
+        this.runIteration();
         for (let y = 0; y < this.rows; y++) {
             for (let x = 0; x < this.cols; x++) {
-                this.board[y][x] = (Math.random() >= 3.5);
+                this.board[y][x] = (Math.random() >= 0.5);
             }
         }
-        this.setState({ cells: this.makeCells() });
     }
 
-    stopGame = () => { 
-        this.setState({ isRunning: false });
-    if (this.timeoutHandler) { window.clearTimeout(this.timeoutHandler); 
-        this.timeoutHandler = null }  
+    makeCells() {
+        let cells = [];
+        for (let y = 0; y < this.rows; y++){
+            for (let x = 0; x < this.cols; x++){
+                if (this.board[y][x]){
+                    cells.push({x, y});
+                }
+            }
+            return cells;
+        }
     }
 
-    intervalChange = (event) => { 
-        this.setState({ interval: event.target.value }); 
-    }
-    
+
     runIteration = () => { 
         let newBoard = this.makeCleanBoard(); 
         this.board = newBoard; 
@@ -79,7 +83,7 @@ class Game extends React.Component {
         this.timeoutHandler = window.setTimeout(() => { this.runIteration(); }, 
         this.state.interval)
 
-        for (let y=0; y< this.rows; y++) {
+        for (let y=0; y < this.rows; y++) {
             for (let x = 0; x < this.cols; x++) {
                 let cellMates = this.cellRules(this.board, x, y);
                 if (this.board[y][x]) { 
@@ -96,82 +100,83 @@ class Game extends React.Component {
         }
     }
 
+    stopGame = () => { 
+        this.setState({ isRunning: false });
+    if (this.timeoutHandler) { window.clearTimeout(this.timeoutHandler); 
+        this.timeoutHandler = null }  
+    }
+
+    intervalChange = (event) => { 
+        this.setState({ interval: event.target.value }); 
+    }
+
+
+    makeCleanBoard() {
+        let board = [];
+        for (let y = 0; y < this.rows; y++){
+            board[y] = [];
+            for (let x = 0; x < this.cols; x++){
+                board[y][x] = false;
+            }
+            
+        }
+        return board;
+    }
+
+    clearGame() {
+        this.board = this.makeCleanBoard();
+        this.setState({ cells: this.makeCells() });
+    }
+
+
     getElementOffSet() {
         const rect = this.boardRef.getBoundingClientRect();
         const doc = document.documentElement
         return {
             x: (rect.left + window.pageXOffset) - doc.clientLeft,
             y: (rect.top + window.pageYOffset) - doc.clientTop
-        }
+        };
     }
 
 
-    
-
-        makeCleanBoard(){
-            let board = [];
-            for (let y = 0; y < this.rows; y++){
-                board[y] = [];
-                for (let x = 0; x < this.cols; x++){
-                    board[y][x] = false;
-                    return board;
-                }
-                
-            }
-            return board;
-        }
-
-        makeCells() {
-            let cells = [];
-            for (let y = 0; y < this.rows; y++){
-                for (let x = 0; x < this.cols; x++){
-                    if (this.board[y][x]){
-                        cells.push({ x, y });
-                    }
-                }
-                return cells;
-            }
-        }
-
+    cellRules(board, x, y) {
+        let cellMates = 0;
         
+        const dirs = [[-1, -1], [-1, 0], [-1, 1], [0, 1], [1, 1], [1, 0], [1, -1], [0, -1]];
 
-        cellRules(board, x, y) {
-            let cellMates = 0;
-            const dirs = [[-1, -1], [-1, 0], [-1, 1], [0, 1], [1, 1], [1, 0], [1, -1], [0, -1]];
+        for (let i = 0; i < dirs.length; i++) {
+            const dir = dirs[i];
+            let y1 = y + dir[0];
+            let x1 = x + dir[1];
 
-            for (let i = 0; i < dirs.length; i++) {
-                const dir = dirs[i];
-                let y1 = y + dir[0];
-                let x1 = x + dir[1];
-
-            if (x1 >= 0 && x1 < this.cols && y1 >= 0 && y1 < this.rows && board[y1][x1]) {
-                cellMates++;
-                }
+        if (x1 >= 0 && x1 < this.cols && y1 >= 0 && y1 < this.rows && board[y1][x1]) {
+            cellMates++;
             }
-            return cellMates
         }
+        return cellMates
+    }
 
-        render() {
-            const { cells } = this.state; 
-            return(
-                <div>
-                    <div className="ButtonRow">
-                        <input value={this.state.interval} onChange={this.intervalChange}/>
-                        <button className="Button" onClick={this.startGame}>Start</button>
-                        <button className="Button" onClick={this.stopGame}>Pause</button>
-                        <button>Clear</button>
-                    </div>
-                    <div className="Board" style={{ width: WIDTH, height: HEIGHT, backgroundSize: `${CELL_SIZE}px ${CELL_SIZE}px`}}
-                    ref={(n) => { this.boardRef = n}}>
-                        {cells.map(cell => (
-                        <Cell x={cell.x} y={cell.y} key={`${cell.x},${cell.y}`}/>
-                        ))}
-                    </div>
+    render() {
+        const { cells } = this.state; 
+        return(
+            <div>
+                <div className="ButtonRow">
+                    <input value={this.state.interval} onChange={this.intervalChange}/>
+                    <button className="Button" onClick={this.startGame}>Start</button>
+                    <button className="Button" onClick={this.stopGame}>Pause</button>
+                    <button className="Button" onClick={this.clearGame}>Clear</button>
                 </div>
-                
-        
-            );
-        }
+                <div className="Board" style={{ width: WIDTH, height: HEIGHT, backgroundSize: `${CELL_SIZE}px ${CELL_SIZE}px`}}
+                ref={(n) => { this.boardRef = n}}>
+                    {cells.map(cell => (
+                    <Cell x={cell.x} y={cell.y} key={`${cell.x},${cell.y}`}/>
+                    ))}
+                </div>
+            </div>
+            
+    
+        );
+    }
 
 }
 
